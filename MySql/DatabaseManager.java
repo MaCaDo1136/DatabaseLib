@@ -1,8 +1,8 @@
-/*
+ /*
  * Written by Mario Casas
  */
 
-package myapp1.databaseLib;
+ package MySql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -133,5 +133,7 @@ public class DatabaseManager {
             System.err.println(e.getMessage());
         }
     }
+
+}
 
 }

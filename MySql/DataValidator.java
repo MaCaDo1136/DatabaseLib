@@ -2,9 +2,9 @@
  * Written by Mario Casas
  */
 
-package myapp1.databaseLib;
+ package MySql;
 
-public class DataValidator {
+ public class DataValidator {
     
     public static boolean isNumber(String value) {
         try {
