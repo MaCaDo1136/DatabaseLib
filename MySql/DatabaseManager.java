@@ -4,10 +4,17 @@
 
  package MySql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+ import java.sql.Connection;
+ import java.sql.DriverManager;
+ import java.sql.PreparedStatement;
+ import java.sql.ResultSet;
+ import java.sql.SQLException;
+ import java.sql.Date;
+ import java.sql.Time;
+ import java.sql.Statement;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class DatabaseManager {
 
@@ -112,20 +119,37 @@ public class DatabaseManager {
         updateLine(tableName, newData, newValue, refData, refValue);
     }
 
-    public void selectData(String tableName) {
+    //Advanced Dates Manager
+
+    public void addDate(String titulo, String descripcion, LocalDate fecha, LocalTime hora) {
+        String sql = "INSERT INTO citas (titulo, descripcion, fecha, hora) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, titulo);
+            pstmt.setString(2, descripcion);
+            pstmt.setDate(3, Date.valueOf(fecha));
+            pstmt.setTime(4, Time.valueOf(hora));
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showAllDates(String tableName) {
         try {
             String sql = "SELECT * FROM " + tableName;
             ResultSet rs = connection.createStatement().executeQuery(sql);
-
-            System.out.printf("%-10s %-20s %-20s %-20s%n", "ID", "Nombre", "Primer Apellido", "Segundo Apellido");
-
+    
+            System.out.printf("%-10s %-20s %-20s %-20s %-20s%n", "ID", "titulo", "descripcion", "fecha", "hora");
+    
             while (rs.next()) {
                 int id = rs.getInt("id");
-                String nombre = rs.getString("nombre");
-                String primerApellido = rs.getString("primerApellido");
-                String segundoApellido = rs.getString("segundoApellido");
-
-                System.out.printf("%-10d %-20s %-20s %-20s%n", id, nombre, primerApellido, segundoApellido);
+                String titulo = rs.getString("titulo");
+                String descripcion = rs.getString("descripcion");
+                LocalDate fecha = rs.getDate("fecha").toLocalDate();
+                LocalTime hora = rs.getTime("hora").toLocalTime();
+    
+                System.out.printf("%-10d %-20s %-20s %-20s %-20s%n", id, titulo, descripcion, fecha, hora);
             }
 
             rs.close();
@@ -134,6 +158,20 @@ public class DatabaseManager {
         }
     }
 
-}
+    public void updateDate(int id, String titulo, String descripcion, LocalDate fecha, LocalTime hora) {
+        String sql = "UPDATE citas SET titulo = ?, descripcion = ?, fecha = ?, hora = ? WHERE id = ?";
+    
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, titulo);
+            pstmt.setString(2, descripcion);
+            pstmt.setDate(3, Date.valueOf(fecha));
+            pstmt.setTime(4, Time.valueOf(hora));
+            pstmt.setInt(5, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
