@@ -7,6 +7,9 @@
  public class DataValidator {
     
     public static boolean isNumber(String value) {
+        if (value == null) {
+            return false;
+        }
         try {
             Double.parseDouble(value);
             return true;
@@ -28,7 +31,11 @@
         String[] updatedData = new String[values.length];
 
         for (int i = 0; i < values.length; i++) {
-            updatedData[i] = formatValue(values[i]);
+            if (values[i] != null) {
+                updatedData[i] = formatValue(values[i]);
+            } else {
+                continue;
+            }
         }
         return updatedData;
     }

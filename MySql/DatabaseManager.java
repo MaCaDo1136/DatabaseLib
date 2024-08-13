@@ -11,7 +11,6 @@
  import java.sql.SQLException;
  import java.sql.Date;
  import java.sql.Time;
- import java.sql.Statement;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -109,7 +108,11 @@ public class DatabaseManager {
 
     public void updateLine(String tableName, String[] newData, String[] newValue, String refData, String refValue) {
         for (int i = 0; i < newData.length; i++) {
-            updateData(tableName, newData[i], newValue[i], refData, refValue);
+            if (newValue[i] == null) {
+                continue;
+            } else {
+                updateData(tableName, newData[i], newValue[i], refData, refValue);
+            }
         }
     }
 
@@ -118,6 +121,49 @@ public class DatabaseManager {
 
         updateLine(tableName, newData, newValue, refData, refValue);
     }
+
+    public String returnId(String tableName, String data, String value) {
+        try {
+            String sql = "SELECT id FROM " + tableName + " WHERE " + data + " = " + value;
+            ResultSet rs = connection.createStatement().executeQuery(sql);
+            if (rs.next()) {
+                int idNum = rs.getInt("id");
+                return String.valueOf(idNum);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
+        return null;
+    }
+
+    public void selectLine(String tableName, String data, String value) {
+        try {
+            String sql = "SELECT * FROM " + tableName + " WHERE " + data + " = " + value;
+            
+            ResultSet rs = connection.createStatement().executeQuery(sql);
+    
+            System.out.printf("%-10s %-6s %-20s %-20s %-20s %-20s %-16s %-56s%n", "id", "codeId", "name", "midname", "lastName1", "lastName2", "telephoneNum", "mail");
+    
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String codeId = rs.getString("codeId");
+                String name = rs.getString("name");
+                String midname = rs.getString("midname");
+                String lastName1 = rs.getString("lastName1");
+                String lastName2 = rs.getString("lastName2");
+                String telephoneNum = rs.getString("telephoneNum");
+                String mail = rs.getString("mail");
+    
+                System.out.printf("%-10d %-6s %-20s %-20s %-20s %-20s %-16s %-56s%n", id, codeId, name, midname, lastName1, lastName2, telephoneNum, mail);
+            }
+    
+            rs.close();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+    
 
     //Advanced Dates Manager
 
